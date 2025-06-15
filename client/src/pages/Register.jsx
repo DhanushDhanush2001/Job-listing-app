@@ -1,14 +1,14 @@
-import React, { useState,useContext } from 'react';
+import React, { useState} from 'react';
 import { FaRegUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { MdOutlineMailOutline } from 'react-icons/md';
 import { RiLock2Fill } from "react-icons/ri";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaPhoneFlip } from "react-icons/fa6";
 import { HiChevronDown } from 'react-icons/hi';
-import { Link,Navigate} from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { Context} from '../main';
+import { Context } from '../main';
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -18,18 +18,20 @@ const Register = () => {
     const [role, setRole] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { isAuthorized, setIsAuthorized} = useContext(Context);
-    
-    const handleRegister = async(e) => {
+    const [isRegistered, setIsRegistered] = useState(false);
+
+
+    const handleRegister = async (e) => {
         e.preventDefault();
+
         if (!fullname || !email || !phoneNumber || !password || !role) {
             toast.error("Please fill in all fields");
             return;
         }
-        
+
         setIsLoading(true);
         try {
-            const {data} = await axios.post(
+            const { data } = await axios.post(
                 "http://localhost:8000/api/v1/user/register",
                 { fullname, phoneNumber, email, role, password },
                 {
@@ -39,34 +41,39 @@ const Register = () => {
                     withCredentials: true,
                 }
             );
+
             toast.success(data.message);
             setFullName("");
             setEmail("");
             setPassword("");
             setPhoneNumber("");
             setRole("");
-            setIsAuthorized(true);
+            setIsRegistered(true); // Redirect trigger
+
         } catch (error) {
             toast.error(error.response?.data?.message || "Registration failed");
         } finally {
             setIsLoading(false);
         }
     };
-    if(isAuthorized){
-    return <Navigate to={'/login'}/>
-  }
-    
+
+    // Redirect to login page after successful registration
+    if (isRegistered) {
+        return <Navigate to="/login" />;
+    }
+
     return (
         <div className="auth-container">
             <div className="w-full max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 items-center">
+
                 {/* Left Side - Illustration */}
                 <div className="hidden lg:block order-2 lg:order-1">
                     <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-l from-primary-600/20 to-primary-700/20 rounded-3xl transform -rotate-3"></div>
                         <div className="relative bg-white rounded-3xl p-8 shadow-2xl">
-                            <img 
-                                src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                                alt="Team collaboration" 
+                            <img
+                                src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800"
+                                alt="Team collaboration"
                                 className="w-full h-96 object-cover rounded-2xl"
                             />
                             <div className="mt-6 text-center">
@@ -96,12 +103,10 @@ const Register = () => {
                         <form onSubmit={handleRegister} className="space-y-6">
                             {/* Role Selection */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                    Register As
-                                </label>
+                                <label className="block text-sm font-semibold text-gray-700">Register As</label>
                                 <div className="input-group">
-                                    <select 
-                                        value={role} 
+                                    <select
+                                        value={role}
                                         onChange={(e) => setRole(e.target.value)}
                                         className="select-field text-gray-700"
                                         required
@@ -115,11 +120,9 @@ const Register = () => {
                                 </div>
                             </div>
 
-                            {/* Name */}
+                            {/* Full Name */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                    Full Name
-                                </label>
+                                <label className="block text-sm font-semibold text-gray-700">Full Name</label>
                                 <div className="input-group">
                                     <input
                                         type="text"
@@ -135,9 +138,7 @@ const Register = () => {
 
                             {/* Email */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                    Email Address
-                                </label>
+                                <label className="block text-sm font-semibold text-gray-700">Email Address</label>
                                 <div className="input-group">
                                     <input
                                         type="email"
@@ -151,11 +152,9 @@ const Register = () => {
                                 </div>
                             </div>
 
-                            {/* Phone */}
+                            {/* Phone Number */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                    Phone Number
-                                </label>
+                                <label className="block text-sm font-semibold text-gray-700">Phone Number</label>
                                 <div className="input-group">
                                     <input
                                         type="tel"
@@ -171,9 +170,7 @@ const Register = () => {
 
                             {/* Password */}
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                    Password
-                                </label>
+                                <label className="block text-sm font-semibold text-gray-700">Password</label>
                                 <div className="input-group">
                                     <input
                                         type={showPassword ? "text" : "password"}
@@ -207,8 +204,8 @@ const Register = () => {
                             </div>
 
                             {/* Submit Button */}
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={isLoading}
                                 className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -226,8 +223,8 @@ const Register = () => {
                             <div className="text-center pt-4 border-t border-gray-200">
                                 <p className="text-gray-600">
                                     Already have an account?{' '}
-                                    <Link 
-                                        to="/login" 
+                                    <Link
+                                        to="/login"
                                         className="text-primary-600 hover:text-primary-700 font-semibold transition-colors"
                                     >
                                         Sign In
